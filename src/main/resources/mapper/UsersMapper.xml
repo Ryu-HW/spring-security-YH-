@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.prac_ss.mapper.UsersMapper">
+
+    <insert id="signUp" parameterType="com.example.prac_ss.dto.UserDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (email, password)
+        VALUES (#{email}, #{password})
+    </insert>
+
+    <select id="selectRoles" resultType="com.example.prac_ss.dto.Role">
+        SELECT * FROM roles limit #{limit}
+    </select>
+
+    <insert id="insertUserRole">
+        INSERT INTO users_roles (user_id, role_id)
+        VALUES (#{userId}, #{roleId})
+    </insert>
+
+    <select id="selectUserEmailByEmail" resultType="String">
+        SELECT email FROM users where email = #{email}
+    </select>
+
+<!--작성된 SQL
+create database ss;
+
+use ss;
+
+create table users (
+    id int not null auto_increment primary key,
+    email varchar(50) unique not null,
+    password varchar(255) not null
+);
+
+create table roles (
+	id int not null auto_increment primary key,
+	role varchar(50) unique not null
+);
+
+create table users_roles (
+    user_id int not null,
+    role_id int not null,
+    primary key (user_id, role_id),
+    foreign key (user_id) references users(id)
+        on delete cascade,
+    foreign key (role_id) references roles(id)
+        on delete cascade
+);
+
+-->
+
+</mapper>
