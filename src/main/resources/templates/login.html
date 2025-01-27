@@ -1,19 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+
+<!--    csrf활성화시 html head태그에 추가해야함 없어도 잘 되긴함-->
+<!--    <meta name="_csrf" content="{{_csrf.token}}"/>-->
+<!--    <meta name="_csrf_header" content="{{_csrf.headerName}}"/>-->
 </head>
 <body>
   로그인 페이지
   <hr>
-  <form action="/login" method="post" name="loginForm">
-    <input id="username" type="email" name="email" placeholder="id"/>
-    <input id="password" type="password" name="password" placeholder="password"/>
-    <input type="submit" value="login"/>
+  <form action="/login" method="post" name="login">
+      <input id="username" type="email" name="username" placeholder="id"/>
+      <input id="password" type="password" name="password" placeholder="password"/>
+<!--      csrf가 enable상태일 때 post문에 토큰데이터를 포함시켜줘야함(이유는 아직 모름)-->
+      <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+      <input type="submit" value="login"/>
   </form>
 </body>
 </html>

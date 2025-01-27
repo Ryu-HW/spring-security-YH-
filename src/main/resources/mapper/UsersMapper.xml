@@ -9,8 +9,21 @@
         VALUES (#{email}, #{password})
     </insert>
 
-    <select id="selectRoles" resultType="com.example.prac_ss.dto.Role">
-        SELECT * FROM roles limit #{limit}
+    <select id="selectRoles" resultType="String">
+        SELECT role FROM roles where id = #{id}
+    </select>
+
+    <select id="selectRolesByUserId" resultType="com.example.prac_ss.dto.Role">
+        <!--    roles와users_roles를 결합하는데 users_roles.role_id = roles.id를 하나로 합침(fk)-->
+        SELECT r.*
+        FROM roles r
+        JOIN users_roles ur ON ur.role_id = r.id
+        WHERE ur.user_id = #{id}
+
+<!--    SELECT roles.*-->
+<!--    FROM roles-->
+<!--    JOIN users_roles ON users_roles.role_id = roles.id-->
+<!--    WHERE users_roles.user_id = #{id}-->
     </select>
 
     <insert id="insertUserRole">
@@ -22,6 +35,9 @@
         SELECT email FROM users where email = #{email}
     </select>
 
+    <select id="selectUserByEmail" resultType="com.example.prac_ss.dto.UserDto">
+        SELECT * FROM users where email = #{username}
+    </select>
 <!--작성된 SQL
 create database ss;
 

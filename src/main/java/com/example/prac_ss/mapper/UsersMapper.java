@@ -14,5 +14,7 @@ public interface UsersMapper {
     public List<Role> selectRoles(int limit);
     public void insertUserRole(int userId, int roleId);
     public String selectUserEmailByEmail(String email);
+    public UserDto selectUserByEmail(String username);
+    public List<Role> selectRolesByUserId(Integer id);
 
 }
