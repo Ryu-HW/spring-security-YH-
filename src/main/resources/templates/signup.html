@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -13,6 +13,7 @@
 <form action="/signup" method="post" name="loginForm">
     <input id="username" type="email" name="email" placeholder="id"/>
     <input id="password" type="password" name="password" placeholder="password"/>
+    <input type="hidden" name="_csrf" th:value="${_csrf.token}">
     <input type="submit" value="signup"/>
 </form>
 </body>

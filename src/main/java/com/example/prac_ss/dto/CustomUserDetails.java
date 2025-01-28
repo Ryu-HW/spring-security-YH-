@@ -19,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
     //Dto객체로 생성했을 때의 생성자
     public CustomUserDetails(UserDto userDto,List<String> roles){
         this.userDto = userDto;
-        this.roles = roles;
+        this.roles = roles; //userDto에 해당하는 id값으로, users_roles를 통해 role의 권한String을 리스트로 받아옴.
     }
 
     @Override

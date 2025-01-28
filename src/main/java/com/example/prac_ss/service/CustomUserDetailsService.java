@@ -42,7 +42,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             return new CustomUserDetails(userDto,roles);
         }
 
-        return null;
+        return null; //가입한 회원정보가 없음.
     }
 
 }
