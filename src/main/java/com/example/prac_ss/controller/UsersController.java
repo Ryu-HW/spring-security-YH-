@@ -44,13 +44,13 @@ public class UsersController {
         return "/signup";
     }
 
-    @PostMapping("/signup")
-    public String signupForm(@ModelAttribute UserDto userDto){
-
-        usersService.signUp(userDto);
-
-        return "redirect:/login";
-    }
+//    @PostMapping("/signup")
+//    public String signupForm(@ModelAttribute UserDto userDto){
+//
+//        usersService.signUp(userDto);
+//
+//        return "redirect:/login";
+//    }
 
     @GetMapping("/my/info")
     public String myPage(Model model){
