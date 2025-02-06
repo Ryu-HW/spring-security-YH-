@@ -30,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
+        //헤더에 요청이 있는지 확인하는 코드 쿠키에서 바로 확인도 가능
         final String authHeader = request.getHeader("Authorization");
 
         //권한이 잘 있고 Bearer로 시작된다면 true

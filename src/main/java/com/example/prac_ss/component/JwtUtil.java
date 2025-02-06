@@ -45,11 +45,11 @@ public class JwtUtil {
 
     // Claims 추출
     private Claims extractClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
-
     }
 
 }

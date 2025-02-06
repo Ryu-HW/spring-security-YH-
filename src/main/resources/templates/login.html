@@ -24,6 +24,8 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
+
+
     document.getElementById('login-form').addEventListener('submit', function(event) {
         event.preventDefault();  // 기본 폼 제출 동작을 방지합니다.
 
@@ -62,18 +64,8 @@
             window.location.href = "/login";  // 로그인 실패 시 로그인 페이지로 리다이렉션
         });
     });
-    // axios 인터셉터 설정: 모든 요청에 토큰을 자동으로 추가
-    //axios.interceptors.request.use(function(config) {
-    //    const token = localStorage.getItem('jwtToken');  // 로컬 스토리지에서 토큰 가져오기
-    //    if (token) {
-    //        config.headers['Authorization'] = 'Bearer ' + token;  // 헤더에 토큰 추가
-    //    }
-    //    return config;
-    //}, function(error) {
-    //    return Promise.reject(error);
-    //});
 
-    // 이제 모든 axios 요청은 Authorization 헤더에 토큰을 포함시켜 보내게 됩니다
+
 </script>
 
 </body>
