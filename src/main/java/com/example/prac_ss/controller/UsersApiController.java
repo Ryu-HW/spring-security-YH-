@@ -1,6 +1,7 @@
 package com.example.prac_ss.controller;
 
 import com.example.prac_ss.component.JwtUtil;
+import com.example.prac_ss.dto.CustomUserDetails;
 import com.example.prac_ss.dto.UserDto;
 import com.example.prac_ss.service.UsersService;
 import jakarta.servlet.http.Cookie;
@@ -26,17 +27,6 @@ import java.util.stream.Collectors;
 @ResponseBody
 public class UsersApiController {
 
-    @GetMapping("/hello")
-    public ResponseEntity<Map<String, String>> hello() {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        // 응답 데이터로 username을 포함한 Map 객체를 반환
-        Map<String, String> response = new HashMap<>();
-        response.put("username", username);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
     @Autowired
     UsersService usersService;
 
@@ -50,6 +40,7 @@ public class UsersApiController {
     private long REFRESH_TOKEN_EXPIRATION_TIME;
 
     @PostMapping("/signup")
+    //ResponseEntity는 200이나 400번대 500번대 요청을 다룰 수 있고, Map<String, String>는 제이슨형식의 데이터형태이다.
     public ResponseEntity<Map<String, String>> signupForm(@RequestBody UserDto userDto){
 
         try {
@@ -57,6 +48,7 @@ public class UsersApiController {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Signup successful");
             return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "회원가입 처리 중 오류가 발생했습니다: " + e.getMessage());
@@ -70,7 +62,7 @@ public class UsersApiController {
             // AuthenticationManager.authenticate()가 호출될 때 CustomUserDetailService 실행
             //AuthenticationManager는 Spring Sequrity 인증관리 객체
             //UsernamePasswordAuthenticationToken는 username과 password를 받아서 인증확인
-            //authenticate 메서드가 CustomUserDetailService를 username으로 실행시킴
+            //authenticate 메서드가 CustomUserDetailService를 username으로 실행시킴 SecurityConfig를 보면 login경로설정을 주석화해놓음
             //그렇게 생성한 UserDetails와 어려것들을 이용해 Authentication(인증객체)생성
             //SecurityContext(api의 토큰인증 정보)에 해당토큰의 인증정보도 추가함
             Authentication authentication = authenticationManager.authenticate(
@@ -111,8 +103,35 @@ public class UsersApiController {
         }
     }
 
-    @PostMapping("/hi")
-    public Map<String, String> hi(){
-        return Map.of("hi","hi");
+    @GetMapping("/hello")
+    public ResponseEntity<Map<String, String>> hello() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        //권한 확인 코드
+        if (authentication != null) {
+            System.out.println("Authenticated: " + authentication.isAuthenticated());
+            System.out.println("Principal: " + authentication.getPrincipal());
+            System.out.println("Credentials: " + authentication.getCredentials());
+            System.out.println("Authorities: ");
+
+            for (GrantedAuthority authority : authentication.getAuthorities()) {
+                System.out.println(" - " + authority.getAuthority());
+            }
+        } else {
+            System.out.println("No authentication found in SecurityContext.");
+        }
+
+        //권한에서 username 받아오기
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();  // CustomUserDetails에서 username을 가져옵니다.
+
+
+        // 응답 데이터로 username을 포함한 Map 객체를 반환
+        Map<String, String> response = new HashMap<>();
+        response.put("username", username);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 }

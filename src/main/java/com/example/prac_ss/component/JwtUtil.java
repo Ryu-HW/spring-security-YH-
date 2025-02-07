@@ -17,11 +17,10 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
+
+    //application.properties 가면 Value값 있음. 보안을 위해 숨겨놓은 것
     @Value("${jwt.secret-key}")
     private String SECRET_KEY;
-
-//    @Value("${jwt.expiration-time}")// 보안성을 위해 환경변수로 관리 권장
-//    private long EXPIRATION_TIME;    // 1일 (ms)
 
     @Value("${jwt.access-token-expiration-time}")
     private long ACCESS_TOKEN_EXPIRATION_TIME;
@@ -29,15 +28,18 @@ public class JwtUtil {
     @Value("${jwt.refresh-token-expiration-time}")
     private long REFRESH_TOKEN_EXPIRATION_TIME;
 
-    // Claims(?) 추출
+    // JWT에서 Claims 추출
     // 클래임이란
     // jwt는 헤더 페이로드(본문) 서명으로 나뉘는데 페이로드에 클레임이 저장돼있음
     // 클레임은 jwt에 조회가능한 정보, 페이로드는 그 정보를 담은 바디(본문)
+    // 페이로드 안에 클레임이 있는것 (그릇안에 내용물)
     private Claims getClaimsFromToken(String token) {
+
+        //문자열인 SECRET_KEY를 한 번더 암호화하는 것
         SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
         //파서는 직역하자면 구문 분석기. jwt를 분석한다.
-        //같은 key를 이용해 분석후 분석한 값의 페이로드(본문)을 가져옴. Claims 객체로.
+        //같은 key를 이용해 token(jwt)을 분석후 분석한 값의 페이로드(본문)을 가져옴. Claims 객체로.
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -72,7 +74,7 @@ public class JwtUtil {
 
     // JWT 토큰에서 사용자이름 추출
     public String extractUsername(String token) {
-        return getClaimsFromToken(token).getSubject(); //해당 토큰의 페이로드에서 Sub정보 가져오기 'username'으로 만들어놓음
+        return getClaimsFromToken(token).getSubject(); //해당 토큰의 페이로드에서 Sub정보 가져오기. '(username)'으로 만들어놓음
     }
 
     // JWT 토큰에서 권한 정보 추출
@@ -81,6 +83,7 @@ public class JwtUtil {
         //roles를 가져오는데, 해당 페이로드안에 클레임인 roles가 스트링타입으로 받아오게 해주는 메서드
         String roles =  getClaimsFromToken(token).get("roles", String.class);
 
+        //roles의 문자열을 나눠서 리스트화시키는 코드(아래 코드를 풀어서 설명함)
         return Arrays.stream(roles.split(","))
                 .map(UserRole::fromRoleName)
                 .collect(Collectors.toList());

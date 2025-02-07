@@ -21,6 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     UsersMapper usersMapper;
 
     @Override
+    //로그인시 실행되는 메서드 UserDetailsService를 상속받은 클래스를 추적함
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         UserDto userDto = usersMapper.selectUserByEmail(username);
