@@ -44,7 +44,7 @@ public class SecurityConfig {
 //                JWT사용할 시엔 비활성화
 //                .formLogin(auth -> auth
 //                        .loginPage("/login") //로그인 페이지를 /login으로 설정한다는 매서드(GetMapping)
-//                        //loginProcessingUrl은 UserDetailsService를 상속받은 클래스를 실행시키는 중요한 설정.
+////                        loginProcessingUrl은 UserDetailsService를 상속받은 클래스를 실행시키는 중요한 설정.
 //                        .loginProcessingUrl("/login") //로그인 버튼을(PostMapping) /login으로 연결한다는 의미
 //                        .permitAll() // 위 경로를 누구나 접근하게 허용
 //                )
@@ -56,12 +56,15 @@ public class SecurityConfig {
 
 
 
-        http
-                .sessionManagement(auth -> auth
-                        .maximumSessions(1) //최대 몇 개의 세션을 만들 수 있는지.
-                        .maxSessionsPreventsLogin(true) //true는 새로운 로그인 차단, false는 기존 로그인 세션 삭제
-                )
 
+        http
+                //세션 방식에서만 유효
+//                .sessionManagement(auth -> auth
+//                        .maximumSessions(1) //최대 몇 개의 세션을 만들 수 있는지.
+//                        .maxSessionsPreventsLogin(true) //true는 새로운 로그인 차단, false는 기존 로그인 세션 삭제
+//                )
+
+                //요청시 UsernamePasswordAuthenticationFilter보다 먼저 jwtAuthenticationFilter실행(JWT)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 //        http

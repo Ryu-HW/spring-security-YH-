@@ -3,27 +3,38 @@ package com.example.prac_ss.controller;
 import com.example.prac_ss.component.JwtUtil;
 import com.example.prac_ss.dto.UserDto;
 import com.example.prac_ss.service.UsersService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
+@ResponseBody
 public class UsersApiController {
 
     @GetMapping("/hello")
-    public ResponseEntity<String> hello(){
-        return new ResponseEntity<String>(HttpStatus.OK);
+    public ResponseEntity<Map<String, String>> hello() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // 응답 데이터로 username을 포함한 Map 객체를 반환
+        Map<String, String> response = new HashMap<>();
+        response.put("username", username);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Autowired
@@ -34,6 +45,9 @@ public class UsersApiController {
 
     @Autowired
     JwtUtil jwtUtil;
+
+    @Value("${jwt.refresh-token-expiration-time}")
+    private long REFRESH_TOKEN_EXPIRATION_TIME;
 
     @PostMapping("/signup")
     public ResponseEntity<Map<String, String>> signupForm(@RequestBody UserDto userDto){
@@ -51,7 +65,7 @@ public class UsersApiController {
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> user) {
+    public ResponseEntity<Map<String, String>> login (@RequestBody Map<String, String> user, HttpServletResponse response) {
         try {
             // AuthenticationManager.authenticate()가 호출될 때 CustomUserDetailService 실행
             //AuthenticationManager는 Spring Sequrity 인증관리 객체
@@ -63,17 +77,42 @@ public class UsersApiController {
                     new UsernamePasswordAuthenticationToken(user.get("username"), user.get("password"))
             );
 
-            //authentication의 이름을 이용해서 토큰생성
-            String token = jwtUtil.generateToken(authentication.getName());
+            List<String> roles = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
+
+//            String username =authentication.getName();
+
+//            String accessToken = jwtUtil.generateAccessToken(username, roles);
+//            String refreshToken = jwtUtil.generateRefreshToken(username);
+
+            //여러 정보를 이용해서 토큰생성
+            String token = jwtUtil.generateToken(authentication.getName(),roles,REFRESH_TOKEN_EXPIRATION_TIME);
             System.out.println("실험");
 
-            //토큰형태를 맵으로 생성후 반환      {
-            //                                   "token" : (토큰문자열)
-            //                                }
-            return Map.of("token", token);
+//            //토큰형태를 맵으로 생성후 반환      {
+//            //                                   "jwtToken" : (토큰문자열)
+//            //                                }
+//            return Map.of("jwtToken", token);
+
+            // JWT 토큰을 HttpOnly 쿠키로 설정
+            Cookie jwtTokenCookie = new Cookie("jwtToken", token);
+            jwtTokenCookie.setHttpOnly(true);  // 클라이언트 측 JavaScript에서 접근 불가
+            jwtTokenCookie.setPath("/");       // 쿠키의 경로 설정 ("/"는 모든 경로에 대해 유효)
+            jwtTokenCookie.setMaxAge(3600);   // 쿠키 만료 시간 (1시간)
+            // 쿠키를 응답에 추가
+            response.addCookie(jwtTokenCookie);
+
+            // 토큰이 쿠키에 저장되었으므로, 클라이언트는 별도로 토큰을 응답 본문에서 받지 않아도 됨
+            return ResponseEntity.ok(Map.of("jwtToken", token));
 
         } catch (AuthenticationException e) {
             throw new RuntimeException("Invalid credentials");
         }
+    }
+
+    @PostMapping("/hi")
+    public Map<String, String> hi(){
+        return Map.of("hi","hi");
     }
 }

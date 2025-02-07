@@ -22,6 +22,7 @@ public class CustomUserDetails implements UserDetails {
         this.roles = roles; //userDto에 해당하는 id값으로, users_roles를 통해 role의 권한String을 리스트로 받아옴.
     }
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
