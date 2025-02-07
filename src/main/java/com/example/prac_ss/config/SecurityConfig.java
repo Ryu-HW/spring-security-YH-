@@ -50,10 +50,12 @@ public class SecurityConfig {
 //                        .permitAll() // 위 경로를 누구나 접근하게 허용
 //                )
 
-                .logout(auth -> auth
-                        .logoutUrl("/logout") //get메서드로 로그아웃 할 수 있게 함
-                        .logoutSuccessUrl("/")
-                );
+                //세션 로그아웃 비활성화
+                .logout(AbstractHttpConfigurer::disable);
+//                .logout(auth -> auth
+//                        .logoutUrl("/logout") //get메서드로 로그아웃 할 수 있게 함
+//                        .logoutSuccessUrl("/")
+//                );
 
 
 

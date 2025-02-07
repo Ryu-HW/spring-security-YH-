@@ -3,6 +3,7 @@ package com.example.prac_ss.controller;
 import com.example.prac_ss.component.JwtUtil;
 import com.example.prac_ss.dto.CustomUserDetails;
 import com.example.prac_ss.dto.UserDto;
+import com.example.prac_ss.service.CustomUserDetailsService;
 import com.example.prac_ss.service.UsersService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -38,6 +40,9 @@ public class UsersApiController {
 
     @Value("${jwt.refresh-token-expiration-time}")
     private long REFRESH_TOKEN_EXPIRATION_TIME;
+
+    @Autowired
+    CustomUserDetailsService customUserDetailsService;
 
     @PostMapping("/signup")
     //ResponseEntity는 200이나 400번대 500번대 요청을 다룰 수 있고, Map<String, String>는 제이슨형식의 데이터형태이다.
@@ -77,6 +82,8 @@ public class UsersApiController {
 
 //            String accessToken = jwtUtil.generateAccessToken(username, roles);
 //            String refreshToken = jwtUtil.generateRefreshToken(username);
+            //accessToken은 로컬스토리지, refreshToken은 쿠키에 저장하고 평소엔 accessToken으로 인증하다
+            //accessToken이 만료돼서 401에러메시지를 반환하면 클라이언트서버에서 refreshToken를 갖고 @PostMapping("/refresh")를 요청한다
 
             //여러 정보를 이용해서 토큰생성
             String token = jwtUtil.generateToken(authentication.getName(),roles,REFRESH_TOKEN_EXPIRATION_TIME);
@@ -132,6 +139,40 @@ public class UsersApiController {
         response.put("username", username);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
+        // 쿠키 삭제
+        Cookie cookie = new Cookie("jwtToken", null);  // 쿠키 이름은 jwtToken, 값을 null로 설정
+        cookie.setMaxAge(0);  // 쿠키 만료 시간 0으로 설정
+        cookie.setPath("/");  // 쿠키 경로 설정 (보통은 "/"로 설정)
+        cookie.setHttpOnly(true);  // HttpOnly 설정 (자바스크립트에서 접근 불가)
+
+        response.addCookie(cookie);  // 응답에 쿠키 추가
+
+
+        String message = "로그아웃 되었습니다";
+
+        return ResponseEntity.ok(Map.of("message", message));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String, String> tokens) {
+        String refreshToken = tokens.get("refreshToken");
+
+        if (!jwtUtil.validateToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid Refresh Token"));
+        }
+
+        String username = jwtUtil.extractUsername(refreshToken);
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        String newAccessToken = jwtUtil.generateAccessToken(username, roles);
+        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
     }
 
 }
