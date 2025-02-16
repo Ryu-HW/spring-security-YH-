@@ -1,7 +1,11 @@
 package com.example.prac_ss.config;
 
+import com.example.prac_ss.service.CustomOAuth2UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -10,25 +14,38 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration  //해당 클래스가 Config(설정) 클래스라는 걸 정의하는 어노테이션.
 @EnableWebSecurity  // Spring Security설정을 한다는 어노테이션.
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+
 
     @Bean  // 해당 메서드가 빈에 등록된다는 어노테이션.
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+
         // http(HttpSecurity) 객체는 보안 관련 설정을 담당하는 객체
         http
                 .authorizeHttpRequests(auth -> auth  // HTTP 요청에 대한 접근 권한을 설정합니다.
-                        .requestMatchers("/", "/login","/signup").permitAll()  // "/"와 "/login" 경로는 누구나 접근할 수 있도록 허용
+                        .requestMatchers("/","/oauth2/**", "/login/**","/signup").permitAll()  // "/"와 "/login" 경로는 누구나 접근할 수 있도록 허용
                         .requestMatchers("/admin").hasRole("ADMIN")  // "/admin" 경로는 "ADMIN" 역할을 가진 사용자만 접근 가능하게 설정합니다.
-                        .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")  // "/my/**" **은 그 뒤 모든 주소.
+//                        .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")  // "/my/**" **은 그 뒤 모든 주소.
                         .anyRequest().authenticated()  // 나머지 모든 요청은 인증된 사용자만 접근할 수 있도록 설정합니다.
                 )
 
-                .formLogin(auth -> auth
-                        .loginPage("/login")
-                        .loginProcessingUrl("/loginForm")
-                        .permitAll()
-                );
+//                .formLogin(auth -> auth
+//                        .loginPage("/login")
+//                        .loginProcessingUrl("/loginForm")
+//                        .permitAll()
+//                );
+                .formLogin(login-> login.disable())
+
+                .httpBasic(basic -> basic.disable())
+
+
+                .oauth2Login(oauth2->oauth2
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService)));
 
         http.csrf(AbstractHttpConfigurer::disable);
 //        http.csrf(csrf -> csrf.disable());

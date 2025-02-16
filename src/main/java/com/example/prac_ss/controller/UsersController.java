@@ -20,10 +20,10 @@ public class UsersController {
         return "main";
     }
 
-    @GetMapping("/login")
-    public String loginPage(){
-        return "/login";
-    }
+//    @GetMapping("/login")
+//    public String loginPage(){
+//        return "/login";
+//    }
 
 //    @PostMapping("/login")
 //    public String loginForm(@ModelAttribute UserDto userDto){
@@ -36,6 +36,11 @@ public class UsersController {
     @GetMapping("/admin")
     public String adminPage(){
         return "/admin";
+    }
+
+    @GetMapping("/my/page")
+    public String mypage(){
+        return "/mypage";
     }
 
     @GetMapping("/signup")
