@@ -5,8 +5,8 @@
 <mapper namespace="com.example.prac_ss.mapper.UsersMapper">
 
     <insert id="signUp" parameterType="com.example.prac_ss.dto.UserDto" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO users (email, password)
-        VALUES (#{email}, #{password})
+        INSERT INTO users (email, password, username, login_from, phone_number)
+        VALUES (#{email}, #{password}, #{username}, #{loginForm}, #{phoneNumber})
     </insert>
 
     <select id="selectRoles" resultType="com.example.prac_ss.dto.Role">

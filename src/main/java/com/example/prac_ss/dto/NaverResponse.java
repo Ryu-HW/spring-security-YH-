@@ -2,7 +2,7 @@ package com.example.prac_ss.dto;
 
 import java.util.Map;
 
-
+//네이버 응답을 받아서
 public class NaverResponse implements OAuth2Response{
 
     private final Map<String, Object> attribute;
@@ -36,6 +36,7 @@ public class NaverResponse implements OAuth2Response{
         return attribute.get("name").toString();
     }
 
+    @Override
     public String getMobile() {
         return attribute.get("mobile").toString();
     }

@@ -5,7 +5,40 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="http://www.mysite.com/favicon.ico">
     <title>Document</title>
+
+    <style>
+        .naver-login-btn {
+    display: inline-block;
+    background-color: #1EC800; /* 네이버의 초록색 */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    padding: 10px 20px;
+    text-decoration: none;
+    text-align: center;
+    width: 200px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.naver-login-btn:hover {
+    background-color: #1A9F00; /* 버튼 호버 시 색상 */
+}
+
+.naver-login-text {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.naver-login-btn img {
+    vertical-align: middle;
+    margin-right: 10px;
+}
+    </style>
 </head>
 <body>
   로그인 페이지
@@ -15,5 +48,10 @@
     <input id="password" type="password" name="password" placeholder="password"/>
     <input type="submit" value="login"/>
   </form>
+
+  <a href="/oauth2/authorization/naver" class="naver-login-btn">
+      <span class="naver-login-text">네이버 로그인</span>
+  </a>
+
 </body>
 </html>

@@ -43,7 +43,10 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable())
 
 
+                //OAuth2Login설정, API서버에서 인증을 마치고(인증안되면 실행안됨), SecurityContext 에 유저 정보가 담기기 전
+                //해당 유저의 정보를 반환한 마지막 지점(endpoint)의 설정을 내가 만든 클래스로 대체하는 코드
                 .oauth2Login(oauth2->oauth2
+                        .loginPage("/login")
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService)));
 
