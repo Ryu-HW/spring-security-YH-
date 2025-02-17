@@ -6,11 +6,14 @@
 
     <insert id="signUp" parameterType="com.example.prac_ss.dto.UserDto" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users (email, password, username, login_from, phone_number)
-        VALUES (#{email}, #{password}, #{username}, #{loginForm}, #{phoneNumber})
+        VALUES (#{email}, #{password}, #{username}, #{loginFrom}, #{phoneNumber})
     </insert>
 
     <select id="selectUserRoles" resultType="String">
-        SELECT * FROM roles where user_id = #{userId}
+        SELECT r.role
+        FROM roles r
+        JOIN users_roles ur ON r.id = ur.role_id
+        WHERE ur.user_id = #{userId}
     </select>
 
     <insert id="insertUserRole">
@@ -31,35 +34,14 @@
         UPDATE users
         SET email = #{email},
         username = #{username},
-        phone_number = #{phoneNumber},
+        phone_number = #{phoneNumber}
         WHERE id = #{id}
     </update>
-<!--작성된 SQL
-create database ss;
 
-use ss;
-
-create table users (
-    id int not null auto_increment primary key,
-    email varchar(50) unique not null,
-    password varchar(255) not null
-);
-
-create table roles (
-	id int not null auto_increment primary key,
-	role varchar(50) unique not null
-);
-
-create table users_roles (
-    user_id int not null,
-    role_id int not null,
-    primary key (user_id, role_id),
-    foreign key (user_id) references users(id)
-        on delete cascade,
-    foreign key (role_id) references roles(id)
-        on delete cascade
-);
-
--->
+    <select id="selectUserIdByLoginFrom" resultType="Integer">
+        SELECT id
+        FROM users
+        WHERE login_from = #{loginFrom}
+    </select>
 
 </mapper>

@@ -16,5 +16,6 @@ public interface UsersMapper {
     public String selectUserEmailByEmail(String email);
     public void updateUser(UserDto userDto);
     public String selectLoginFromByLoginFrom(String loginFrom);
+    public Integer selectUserIdByLoginFrom(String loginFrom);
 
 }

@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration  //해당 클래스가 Config(설정) 클래스라는 걸 정의하는 어노테이션.
@@ -17,7 +18,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
-
 
     @Bean  // 해당 메서드가 빈에 등록된다는 어노테이션.
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -57,11 +57,6 @@ public class SecurityConfig {
         return http.build();  // SecurityFilterChain으로 HttpSecurity설정 후 반환.
     }
 
-    @Bean
-    //BCrypt를 권장한다고 함 spring security가.
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
 
-        return new BCryptPasswordEncoder();
-    }
 
 }

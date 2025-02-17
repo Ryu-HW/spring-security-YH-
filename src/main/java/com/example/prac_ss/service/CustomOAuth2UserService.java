@@ -6,7 +6,7 @@ import com.example.prac_ss.dto.OAuth2Response;
 import com.example.prac_ss.dto.UserDto;
 import com.example.prac_ss.mapper.UsersMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -23,7 +23,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UsersMapper usersMapper;
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     //타서버API에서 로그인 인증 후 받아온 유저 정보(OAuth2UserRequest userRequest)를 갖고 커스텀하는 클래스
@@ -63,7 +63,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String loginFrom = oAuth2Response.getProvider()+","+oAuth2Response.getProviderId();
 
         //랜덤 패스워드값 생성
-        String randomPassword = bCryptPasswordEncoder.encode(generateRandomPassword(10));
+        String randomPassword = passwordEncoder.encode(generateRandomPassword(10));
 
         //유저 데이터 Dto에 세팅
         UserDto userDto = new UserDto();
@@ -80,7 +80,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             //회원 정보 저장
             usersMapper.signUp(userDto);
-
+            System.out.println("Generated User ID: " + userDto.getId());
             //회원 ROLE_USER권한 삽입
             usersMapper.insertUserRole(userDto.getId(),1);
 
@@ -89,10 +89,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             //회원 정보 업데이트
             usersMapper.updateUser(userDto);
-
+            //로그인폼으로 userId가져오기
+            userDto.setId(usersMapper.selectUserIdByLoginFrom(loginFrom));
         }
 
-        //유저 정보를 받아서 권한을 collection으로 만들어 반환하거나 하면 됨
+        //유저 id로 권한을 받아서 가져오기
         List<String> roles = usersMapper.selectUserRoles(userDto.getId());
 
         //유저정보를 받아와서 데이터를 뽑아서 CustomOAuth2User 생성(생성자), 후 세션에 등록함
@@ -109,4 +110,5 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         return password.toString();
     }
+
 }

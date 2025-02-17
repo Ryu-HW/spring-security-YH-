@@ -3,8 +3,6 @@ package com.example.prac_ss.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 public class UserDto {
@@ -16,5 +14,4 @@ public class UserDto {
     private String phoneNumber;
     private String loginFrom;
 
-//    private List<Role> roles;
 }
