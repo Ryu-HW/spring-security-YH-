@@ -11,9 +11,10 @@ import java.util.List;
 public interface UsersMapper {
 
     public void signUp(UserDto userDto);
-    public List<Role> selectRoles(int limit);
+    public List<String> selectUserRoles(int userId);
     public void insertUserRole(int userId, int roleId);
     public String selectUserEmailByEmail(String email);
-
+    public void updateUser(UserDto userDto);
+    public String selectLoginFromByLoginFrom(String loginFrom);
 
 }

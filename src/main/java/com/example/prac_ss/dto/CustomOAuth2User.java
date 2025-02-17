@@ -6,6 +6,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class CustomOAuth2User implements OAuth2User {
     private final OAuth2Response oAuth2Response;
 
     //나중에 유저 정보를 List나 Collection으로 받아야함
-    private final String role;
+    private final List<String> roles;
 
     @Override
     public Map<String, Object> getAttributes() {
@@ -29,12 +30,14 @@ public class CustomOAuth2User implements OAuth2User {
 
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return role;
-            }
-        });
+        for (String role : roles) {
+            collection.add(new GrantedAuthority() {
+                @Override
+                public String getAuthority() {
+                    return role;
+                }
+            });
+        }
 
         return null;
     }

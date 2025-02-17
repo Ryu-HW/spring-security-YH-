@@ -40,4 +40,6 @@ public class NaverResponse implements OAuth2Response{
     public String getMobile() {
         return attribute.get("mobile").toString();
     }
+
+
 }

@@ -9,8 +9,8 @@
         VALUES (#{email}, #{password}, #{username}, #{loginForm}, #{phoneNumber})
     </insert>
 
-    <select id="selectRoles" resultType="com.example.prac_ss.dto.Role">
-        SELECT * FROM roles limit #{limit}
+    <select id="selectUserRoles" resultType="String">
+        SELECT * FROM roles where user_id = #{userId}
     </select>
 
     <insert id="insertUserRole">
@@ -22,6 +22,18 @@
         SELECT email FROM users where email = #{email}
     </select>
 
+    <select id="selectLoginFromByLoginFrom" resultType="String">
+        SELECT `login_from` FROM users
+        WHERE login_from = #{loginFrom}
+    </select>
+
+    <update id="updateUser" parameterType="com.example.prac_ss.dto.UserDto">
+        UPDATE users
+        SET email = #{email},
+        username = #{username},
+        phone_number = #{phoneNumber},
+        WHERE id = #{id}
+    </update>
 <!--작성된 SQL
 create database ss;
 
